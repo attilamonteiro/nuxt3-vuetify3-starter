@@ -1,80 +1,85 @@
 <template>
-  <VContainer fluid class="fill-height">
-    <VRow no-gutters align="center" justify="center" class="fill-height">
-      <VCol cols="12" md="6" lg="5" sm="6">
-        <VRow no-gutters align="center" justify="center">
-          <VCol cols="12" md="6">
-            <h1>Sign In</h1>
-            <p class="text-medium-emphasis">Enter your details to get started</p>
+  <div>
+    <nav>
+      <input type="text" placeholder="First name" v-model="firstName" />
+      <input type="text" placeholder="Last name" v-model="lastName" />
+      <input type="number" placeholder="Participation" v-model="participation" />
+      <button @click="addData">Send</button>
+    </nav>
 
-            <VForm @submit.prevent="submit" class="mt-7">
-              <div class="mt-1">
-                <label class="label text-grey-darken-2" for="email">Email</label>
-                <VTextField
-                  :rules="[ruleRequired, ruleEmail]"
-                  v-model="email"
-                  prepend-inner-icon="fluent:mail-24-regular"
-                  id="email"
-                  name="email"
-                  type="email"
-                />
-              </div>
-              <div class="mt-1">
-                <label class="label text-grey-darken-2" for="password">Password</label>
-                <VTextField
-                  :rules="[ruleRequired, rulePassLen]"
-                  v-model="password"
-                  prepend-inner-icon="fluent:password-20-regular"
-                  id="password"
-                  name="password"
-                  type="password"
-                />
-              </div>
-              <div class="mt-5">
-                <VBtn type="submit" block min-height="44" class="gradient primary">Sign In</VBtn>
-              </div>
-            </VForm>
-            <p class="text-body-2 mt-10">
-              <NuxtLink to="/reset-password" class="font-weight-bold text-primary"
-                >Forgot password?</NuxtLink
-              >
-            </p>
-            <p class="text-body-2 mt-4">
-              <span
-                >Don't have an account?
-                <NuxtLink to="/signup" class="font-weight-bold text-primary"
-                  >Sign Up</NuxtLink
-                ></span
-              >
-            </p>
-          </VCol>
-        </VRow>
-      </VCol>
-      <VCol class="hidden-md-and-down fill-height" md="6" lg="7">
-        <VImg
-          src="https://wallpaper.dog/large/5557744.jpg"
-          cover
-          class="h-100 rounded-xl d-flex align-center justify-center"
-        >
-          <div class="text-center w-50 text-white mx-auto">
-            <h2 class="mb-4">Start your journey today</h2>
-            <p>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Asperiores, inventore quia.
-              Dolorum dolores ad ipsum voluptatum rem, hic placeat, odio, odit numquam quod
-              veritatis accusantium assumenda! Sequi, provident in! Iure!
-            </p>
-          </div>
-        </VImg>
-      </VCol>
-    </VRow>
-  </VContainer>
+    <section>
+      <h2>DATA</h2>
+      <p>Lorem ipsum...</p>
+    </section>
+
+    <section>
+      <div class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>First name</th>
+              <th>Last name</th>
+              <th>Participation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in tableData" :key="index">
+              <td>{{ item.firstName }}</td>
+              <td>{{ item.lastName }}</td>
+              <td>{{ item.participation }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="doughnut-chart">
+        <DoughnutChart :data="tableData" :key="chartKey" />
+      </div>
+    </section>
+  </div>
 </template>
 
-<script setup>
-const email = ref("");
-const password = ref("");
+<script>
+import DoughnutChart from "@/components/DoughnutChart.vue";
 
-const { ruleEmail, rulePassLen, ruleRequired } = useFormRules();
+export default {
+  components: {
+    DoughnutChart,
+  },
+  data() {
+    return {
+      firstName: "",
+      lastName: "",
+      participation: "",
+      tableData: [],
 
-const submit = async () => {};
+      chartKey: 0, // Adicionamos uma chave para forçar a atualização do gráfico
+    };
+  },
+  methods: {
+    addData() {
+      if (this.firstName && this.lastName && !isNaN(this.participation)) {
+        const newData = {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          participation: parseFloat(this.participation),
+        };
+        this.tableData.push(newData);
+
+        // Incrementamos a chave para forçar a atualização do gráfico
+        this.chartKey++;
+
+        this.firstName = "";
+        this.lastName = "";
+        this.participation = "";
+      }
+    },
+  },
+};
 </script>
+<style scoped>
+.doughnut-chart {
+  width: 10; /* Defina a largura desejada */
+  height: 10px; /* Defina a altura desejada */
+}
+</style>
